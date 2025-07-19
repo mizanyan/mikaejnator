@@ -55,6 +55,12 @@
       margin-top: 10px;
       font-size: 20px;
       color: #888;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    #mensagem-extra.fade-in {
+      opacity: 1;
     }
 
     #contador {
@@ -114,8 +120,11 @@
       const somSim = document.getElementById("somSim");
 
       respostaDiv.textContent = resposta;
-      mensagemExtraDiv.textContent = "";
       respostaDiv.classList.add("animar");
+
+      // Reset animação da mensagem extra
+      mensagemExtraDiv.classList.remove("fade-in");
+      mensagemExtraDiv.textContent = "";
 
       setTimeout(() => {
         respostaDiv.classList.remove("animar");
@@ -125,14 +134,19 @@
         contNao++;
         somNao.play();
 
-        // 5% de chance de mostrar uma das mensagens extras
-        if (Math.random() < 0.05) {
+        // 5% de chance para uma mensagem aleatória
+        if (Math.random() < 1) {
           const mensagens = [
             "Haha, nada a ver 😂",
             "Vai estragar minha vibe"
           ];
           const msg = mensagens[Math.floor(Math.random() * mensagens.length)];
           mensagemExtraDiv.textContent = msg;
+
+          // Aplicar fade-in com delay pequeno para reiniciar
+          setTimeout(() => {
+            mensagemExtraDiv.classList.add("fade-in");
+          }, 50);
         }
 
       } else {
