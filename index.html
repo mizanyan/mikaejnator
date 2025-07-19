@@ -44,10 +44,17 @@
       font-size: 48px;
       font-weight: bold;
       transition: transform 0.3s ease;
+      text-align: center;
     }
 
     #resposta.animar {
       transform: scale(1.3);
+    }
+
+    #mensagem-extra {
+      margin-top: 10px;
+      font-size: 20px;
+      color: #888;
     }
 
     #contador {
@@ -55,8 +62,7 @@
       font-size: 20px;
       color: #555;
     }
-    
-    /* Botão flutuante no canto superior esquerdo */
+
     .botao-flutuante {
       position: fixed;
       top: 20px;
@@ -85,15 +91,14 @@
   <h1>Mikaejnator</h1>
   <button onclick="gerarResposta()">Posso fazer?</button>
   <div id="resposta"></div>
+  <div id="mensagem-extra"></div>
   <div id="contador">
     Nãos: <span id="contNao">0</span> | Sims: <span id="contSim">0</span>
   </div>
 
-  <!-- Áudios -->
   <audio id="somNao" src="nao.mp3" preload="auto"></audio>
   <audio id="somSim" src="sim.mp3" preload="auto"></audio>
 
-  <!-- Confetti library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <script>
@@ -104,10 +109,12 @@
       const chance = Math.random();
       const resposta = chance < 0.9 ? "não" : "sim";
       const respostaDiv = document.getElementById("resposta");
+      const mensagemExtraDiv = document.getElementById("mensagem-extra");
       const somNao = document.getElementById("somNao");
       const somSim = document.getElementById("somSim");
 
       respostaDiv.textContent = resposta;
+      mensagemExtraDiv.textContent = "";
       respostaDiv.classList.add("animar");
 
       setTimeout(() => {
@@ -117,6 +124,17 @@
       if (resposta === "não") {
         contNao++;
         somNao.play();
+
+        // 5% de chance de mostrar uma das mensagens extras
+        if (Math.random() < 0.05) {
+          const mensagens = [
+            "Haha, nada a ver 😂",
+            "Vai estragar minha vibe"
+          ];
+          const msg = mensagens[Math.floor(Math.random() * mensagens.length)];
+          mensagemExtraDiv.textContent = msg;
+        }
+
       } else {
         contSim++;
         somSim.play();
