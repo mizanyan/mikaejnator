@@ -44,7 +44,6 @@
       font-size: 48px;
       font-weight: bold;
       transition: transform 0.3s ease;
-      text-align: center;
     }
 
     #resposta.animar {
@@ -54,9 +53,9 @@
     #mensagem-extra {
       margin-top: 10px;
       font-size: 20px;
-      color: #888;
+      color: #777;
       opacity: 0;
-      transition: opacity 0.8s ease;
+      transition: opacity 1s ease-in-out;
     }
 
     #mensagem-extra.fade-in {
@@ -68,7 +67,7 @@
       font-size: 20px;
       color: #555;
     }
-
+    
     .botao-flutuante {
       position: fixed;
       top: 20px;
@@ -102,9 +101,12 @@
     Nãos: <span id="contNao">0</span> | Sims: <span id="contSim">0</span>
   </div>
 
+  <!-- Áudios -->
   <audio id="somNao" src="nao.mp3" preload="auto"></audio>
   <audio id="somSim" src="sim.mp3" preload="auto"></audio>
+  <audio id="somTalvez" src="hmmm.mp3" preload="auto"></audio>
 
+  <!-- Confetti library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <script>
@@ -113,47 +115,52 @@
 
     function gerarResposta() {
       const chance = Math.random();
-      const resposta = chance < 0.9 ? "não" : "sim";
       const respostaDiv = document.getElementById("resposta");
       const mensagemExtraDiv = document.getElementById("mensagem-extra");
       const somNao = document.getElementById("somNao");
       const somSim = document.getElementById("somSim");
+      const somTalvez = document.getElementById("somTalvez");
+
+      mensagemExtraDiv.classList.remove("fade-in");
+      mensagemExtraDiv.textContent = "";
+
+      let resposta = "sim";
+      if (chance < 0.05) {
+        resposta = "talvez 🤔";
+      } else if (chance < 0.95) {
+        resposta = "não";
+      }
 
       respostaDiv.textContent = resposta;
       respostaDiv.classList.add("animar");
-
-      // Reset animação da mensagem extra
-      mensagemExtraDiv.classList.remove("fade-in");
-      mensagemExtraDiv.textContent = "";
 
       setTimeout(() => {
         respostaDiv.classList.remove("animar");
       }, 300);
 
-      if (resposta === "não") {
+      if (resposta === "sim") {
+        contSim++;
+        somSim.play();
+        confettiExplosion();
+      } else if (resposta === "não") {
         contNao++;
         somNao.play();
 
-        // 5% de chance para uma mensagem aleatória
+        // 5% chance de aparecer uma mensagem extra
         if (Math.random() < 0.05) {
           const mensagens = [
             "Haha, nada a ver 😂",
-            "Mas veja bem",
             "Vai estragar minha vibe"
           ];
           const msg = mensagens[Math.floor(Math.random() * mensagens.length)];
           mensagemExtraDiv.textContent = msg;
-
-          // Aplicar fade-in com delay pequeno para reiniciar
-          setTimeout(() => {
-            mensagemExtraDiv.classList.add("fade-in");
-          }, 50);
+          setTimeout(() => mensagemExtraDiv.classList.add("fade-in"), 50);
         }
 
-      } else {
-        contSim++;
-        somSim.play();
-        confettiExplosion(); // 🎉
+      } else if (resposta === "talvez 🤔") {
+        somTalvez.play();
+        mensagemExtraDiv.textContent = "Vou perguntar ao pessoal do mostra janela o que acham";
+        setTimeout(() => mensagemExtraDiv.classList.add("fade-in"), 50);
       }
 
       document.getElementById("contNao").textContent = contNao;
